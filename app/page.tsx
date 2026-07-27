@@ -134,7 +134,6 @@ export default function Home() {
       if (!session) {
         setHasSession(false);
         setUserEmail(null);
-        // If they were mid-wizard and got signed out, send them to login
         if (started) router.push("/login");
       } else {
         setHasSession(true);
@@ -375,15 +374,17 @@ export default function Home() {
             </h2>
 
             <input
-              className="border border-[#D8DDD9] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
+              className="border border-[#D8DDD9] bg-white text-[#1A2421] placeholder:text-[#A8B0AC] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
               placeholder="Decision title — e.g. Buy Phone vs Save Money"
+              style={{ colorScheme: "light" }}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
 
             <input
-              className="border border-[#D8DDD9] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
+              className="border border-[#D8DDD9] bg-white text-[#1A2421] placeholder:text-[#A8B0AC] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
               placeholder="Criteria — e.g. Cost, Battery Life, Performance"
+              style={{ colorScheme: "light" }}
               value={criteriaName}
               onChange={(e) => setCriteriaName(e.target.value)}
             />
@@ -433,8 +434,9 @@ export default function Home() {
             </h2>
 
             <input
-              className="border border-[#D8DDD9] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
+              className="border border-[#D8DDD9] bg-white text-[#1A2421] placeholder:text-[#A8B0AC] p-3 rounded-lg w-full mb-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
               placeholder="Option — e.g. Laptop A, Laptop B"
+              style={{ colorScheme: "light" }}
               value={altName}
               onChange={(e) => setAltName(e.target.value)}
             />
