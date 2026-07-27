@@ -27,7 +27,6 @@ type ResultItem = { id: string; name: string; score: number; breakdown: Breakdow
 const BG_IMAGE = "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee";
 const STEPS = ["Criteria", "Options", "Scores", "Result"];
 
-// Segmented 1-5 selector used for both weight and scoring — replaces plain radio buttons
 function Scale({
   value,
   onChange,
@@ -55,7 +54,6 @@ function Scale({
   );
 }
 
-// Ruler-style step indicator: encodes actual sequence, not decorative
 function StepRuler({ step }: { step: number }) {
   return (
     <div className="mb-8">
@@ -102,6 +100,7 @@ export default function Home() {
 
   const [checkingSession, setCheckingSession] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [hasSession, setHasSession] = useState(false);
 
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(1);
@@ -120,28 +119,44 @@ export default function Home() {
   const [saveError, setSaveError] = useState("");
   const [warning, setWarning] = useState("");
 
+  // Only CHECKS session for display purposes here — does NOT redirect.
+  // The landing page is public; only starting the wizard requires login.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) {
-        router.push("/login");
-      } else {
+      if (data.session) {
         setUserEmail(data.session.user.email ?? null);
+        setHasSession(true);
       }
       setCheckingSession(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) {
-        router.push("/login");
+        setHasSession(false);
+        setUserEmail(null);
+        // If they were mid-wizard and got signed out, send them to login
+        if (started) router.push("/login");
+      } else {
+        setHasSession(true);
+        setUserEmail(session.user.email ?? null);
       }
     });
 
     return () => listener.subscription.unsubscribe();
-  }, [router]);
+  }, [router, started]);
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    setStarted(false);
     router.push("/login");
+  }
+
+  function handleStart() {
+    if (!hasSession) {
+      router.push("/login");
+      return;
+    }
+    setStarted(true);
   }
 
   function addCriteria() {
@@ -183,12 +198,11 @@ export default function Home() {
 
   async function calculate() {
     if (!isFullyScored()) {
-      setWarning("Please score every option against every criteria before calculating.");
+      setWarning("Please score every option against every criterion before calculating.");
       return;
     }
     setWarning("");
 
-    // Normalize weights so they sum to 1 -> a true weighted-sum model (0-5 scale)
     const totalWeight = criteria.reduce((s, c) => s + c.weight, 0) || 1;
 
     const res: ResultItem[] = alternatives.map((alt) => {
@@ -211,7 +225,6 @@ export default function Home() {
     await saveDecision(res);
   }
 
-  // Simple, plain-English explanation of the result
   function generateExplanation(res: ResultItem[]): string {
     if (res.length === 0) return "";
 
@@ -287,12 +300,20 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/40" />
 
         <div className="absolute top-6 right-6 flex gap-5 text-sm z-10">
-          <Link href="/history" className="text-white font-medium hover:opacity-80 transition">
-            History
-          </Link>
-          <button onClick={handleLogout} className="text-white/80 hover:text-white transition">
-            Log out
-          </button>
+          {hasSession ? (
+            <>
+              <Link href="/history" className="text-white font-medium hover:opacity-80 transition">
+                History
+              </Link>
+              <button onClick={handleLogout} className="text-white/80 hover:text-white transition">
+                Log out
+              </button>
+            </>
+          ) : (
+            <Link href="/login" className="text-white font-medium hover:opacity-80 transition">
+              Log in
+            </Link>
+          )}
         </div>
 
         <div className="relative px-6 max-w-2xl text-white">
@@ -309,13 +330,13 @@ export default function Home() {
           <p className="text-lg text-white/85 mb-2 max-w-lg mx-auto">
             Score your options against what actually matters to you, and let the numbers make the case.
           </p>
-          {userEmail && <p className="text-sm text-white/60 mb-10">Signed in as {userEmail}</p>}
+          {hasSession && userEmail && <p className="text-sm text-white/60 mb-10">Signed in as {userEmail}</p>}
 
           <button
-            onClick={() => setStarted(true)}
+            onClick={handleStart}
             className="bg-[#1F6F64] hover:bg-[#18564D] text-white px-9 py-3.5 rounded-lg text-base font-medium transition mt-6"
           >
-            Start a decision →
+            {hasSession ? "Start a decision →" : "Get started →"}
           </button>
         </div>
       </div>
