@@ -69,24 +69,32 @@ export default function LoginPage() {
           {mode === "login" ? "Log in to continue weighing your options." : "Set up an account to start tracking decisions."}
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <input
-            type="email"
-            required
-            placeholder="Email"
-            className="border border-[#D8DDD9] p-3 rounded-lg w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            required
-            minLength={6}
-            placeholder="Password (min. 6 characters)"
-            className="border border-[#D8DDD9] p-3 rounded-lg w-full text-sm focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+       <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-[#1A2421] mb-1.5">Email</label>
+            <input
+              type="email"
+              required
+              placeholder="you@example.com"
+              autoComplete="email"
+              className="border border-[#D8DDD9] bg-white p-3 rounded-lg w-full text-sm text-[#1A2421] placeholder:text-[#A8B0AC] focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-[#1A2421] mb-1.5">Password</label>
+            <input
+              type="password"
+              required
+              minLength={6}
+              placeholder="At least 6 characters"
+              autoComplete="current-password"
+              className="border border-[#D8DDD9] bg-white p-3 rounded-lg w-full text-sm text-[#1A2421] placeholder:text-[#A8B0AC] focus:outline-none focus:ring-2 focus:ring-[#1F6F64]/40 focus:border-[#1F6F64] transition"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
           {error && (
             <p className="text-[#A6432F] text-sm bg-[#A6432F]/5 border border-[#A6432F]/20 rounded-lg px-3 py-2">
